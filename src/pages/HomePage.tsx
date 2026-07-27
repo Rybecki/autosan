@@ -1,4 +1,5 @@
-import { motion } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
 import { MapPin, Ticket, Bus } from "lucide-react";
 import {
   CYCLIC_ROUTES,
@@ -17,6 +18,13 @@ type HomePageProps = {
 };
 
 export function HomePage({ onNavigate, playClick }: HomePageProps) {
+  const meetingSectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: meetingSectionRef,
+    offset: ["start end", "end start"],
+  });
+  const meetingBgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+
   return (
     <>
       <section className="relative min-h-[calc(100dvh-4rem)] flex items-center justify-center overflow-hidden">
@@ -91,8 +99,16 @@ export function HomePage({ onNavigate, playClick }: HomePageProps) {
         </motion.div>
       </section>
 
-      <section className="py-20 bg-prl-ink text-prl-cream">
-        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <section ref={meetingSectionRef} className="relative py-20 text-prl-cream overflow-hidden">
+        <motion.img
+          src="/images/brick-wall-meeting-point.png"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-[118%] object-cover will-change-transform"
+          style={{ y: meetingBgY }}
+        />
+        <div className="absolute inset-0 bg-prl-ink/70" aria-hidden />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h2 className="font-display text-4xl md:text-5xl uppercase leading-none">
               {MEETING_POINT.title}
@@ -187,12 +203,19 @@ export function HomePage({ onNavigate, playClick }: HomePageProps) {
         </div>
       </section>
 
-      <section className="py-20 bg-prl-olive/10">
-        <div className="max-w-4xl mx-auto px-4 text-center space-y-6">
+      <section className="relative py-20 overflow-hidden">
+        <img
+          src="/images/brick-wall-meeting-point.png"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-prl-ink/70" aria-hidden />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center space-y-6">
           <Bus className="w-12 h-12 text-prl-red mx-auto" />
-          <p className="font-sans text-lg leading-relaxed text-prl-gray">{ABOUT.bus}</p>
+          <p className="font-sans text-lg leading-relaxed text-prl-cream/90">{ABOUT.bus}</p>
           <p className="font-display text-2xl uppercase text-prl-red">{HERO_MANIFESTO.cta}</p>
-          <p className="font-mono text-xs uppercase text-prl-gray">{HERO_MANIFESTO.note}</p>
+          <p className="font-mono text-xs uppercase text-prl-cream/70">{HERO_MANIFESTO.note}</p>
         </div>
       </section>
     </>
